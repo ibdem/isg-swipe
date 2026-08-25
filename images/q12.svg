@@ -1,10 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#173b58"/><stop offset="1" stop-color="#7893a6"/></linearGradient></defs>
-<rect width="900" height="500" rx="24" fill="url(#g)"/>
-<rect x="28" y="28" width="844" height="444" rx="20" fill="#071d31" opacity=".35"/>
-<circle cx="450" cy="205" r="108" fill="#e7f7eb"/>
-<text x="450" y="248" text-anchor="middle" font-size="130">✅</text>
-<text x="450" y="375" text-anchor="middle" font-family="Arial" font-size="34" font-weight="800" fill="white">Güvenli Makine Çalışması</text>
-<rect x="285" y="405" width="330" height="42" rx="21" fill="#2f9e44"/>
-<text x="450" y="433" text-anchor="middle" font-family="Arial" font-size="19" font-weight="800" fill="white">GÜVENLİ SENARYO</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#173b58"/><stop offset="1" stop-color="#7893a6"/></linearGradient></defs><rect width="900" height="500" rx="24" fill="url(#g)"/><circle cx="450" cy="205" r="108" fill="#f7fafc"/><text x="450" y="248" text-anchor="middle" font-size="130">🧪</text><text x="450" y="375" text-anchor="middle" font-family="Arial" font-size="30" font-weight="800" fill="white">Kimyasal Transfer – KKD</text><rect x="285" y="405" width="330" height="42" rx="21" fill="#2f9e44"/><text x="450" y="433" text-anchor="middle" font-family="Arial" font-size="19" font-weight="800" fill="white">GÜVENLİ</text></svg>
