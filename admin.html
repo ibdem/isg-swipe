@@ -7,7 +7,7 @@ body{margin:0;background:#071d31;font-family:Arial,sans-serif;color:#17202a}.wra
 <div class="brand">🦺 İSG <span>SWIPE</span> — YÖNETİCİ PANELİ</div>
 <div id="login" class="panel"><h2>Yönetici Girişi</h2><div class="row"><input id="email" type="email" placeholder="Yönetici e-postası"><input id="password" type="password" placeholder="Şifre"><button id="loginBtn">Giriş Yap</button></div><p id="loginMsg"></p></div>
 <div id="dashboard" class="hidden">
-<div class="panel"><div class="row"><h2 style="flex:1">📊 Genel Sonuçlar</h2><button id="refresh">Yenile</button><button id="logout">Çıkış</button></div>
+<div class="panel"><div class="row"><h2 style="flex:1">📊 Genel Sonuçlar</h2><button id="refresh">Yenile</button><button id="clearAll" style="background:#d62828">🧹 Tüm Test Kayıtlarını Temizle</button><button id="logout">Çıkış</button></div>
 <div class="cards"><div class="card"><b id="total">0</b>TOPLAM KATILIM</div><div class="card"><b id="completed">0</b>TAMAMLAYAN</div><div class="card"><b id="avg">0</b>ORTALAMA PUAN</div><div class="card"><b id="best">0</b>EN YÜKSEK PUAN</div></div></div>
 <div class="panel"><div class="row"><h2 style="flex:1">👥 Katılımcılar</h2><input id="search" class="search" placeholder="Katılımcı ara..."></div><div id="people"></div></div>
 <div class="panel"><h2>❌ En Çok Yanlış Yapılan Sorular</h2><p class="muted">Bu bölüm, tüm katılımcıların yanlış cevaplarını birleştirir. Sorular tam metin olarak gösterilir.</p><div id="wrongList"></div></div>
@@ -39,7 +39,7 @@ function renderPeople(){
   let list=rows.filter(x=>(x.kullanici_adi||"").toLocaleLowerCase("tr-TR").includes(term));
   $("people").innerHTML=list.length?list.map(x=>{
     let w=(x.yanlis_soru_kimlikleri||[]).length, c=x.cevaplanan_sorular-w;
-    return `<div class="person"><b>${esc(x.kullanici_adi)}</b><br><span class="muted">${new Date(x.created_at).toLocaleString("tr-TR")}</span><br>🎯 <b>${x.puan}/120</b> &nbsp; ✅ ${c} doğru &nbsp; ❌ ${w} yanlış &nbsp; ${x.cevaplanan_sorular===12?"✅ Tamamladı":"⏱️ Tamamlanmadı"}</div>`
+    return `<div class="person"><div class="row"><div style="flex:1"><b>${esc(x.kullanici_adi)}</b><br><span class="muted">${new Date(x.created_at).toLocaleString("tr-TR")}</span><br>🎯 <b>${x.puan}/120</b> &nbsp; ✅ ${c} doğru &nbsp; ❌ ${w} yanlış &nbsp; ${x.cevaplanan_sorular===12?"✅ Tamamladı":"⏱️ Tamamlanmadı"}</div><button onclick="deleteOne(${x.id})" style="background:#d62828">🗑️ Sil</button></div></div>`
   }).join(""):"<p>Katılımcı bulunamadı.</p>";
 }
 function renderWrong(){
@@ -52,5 +52,31 @@ function renderWrong(){
   }).join(""):"<p>Henüz yanlış yapılan soru yok.</p>";
 }
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-$("loginBtn").onclick=login;$("refresh").onclick=load;$("logout").onclick=()=>location.reload();$("search").oninput=renderPeople;
+
+async function deleteOne(id){
+  if(!confirm("Bu katılımcının test sonucunu silmek istediğinize emin misiniz?")) return;
+  let r=await fetch(URL+"/rest/v1/isg_katilimlar?id=eq."+encodeURIComponent(id),{
+    method:"DELETE",
+    headers:{apikey:KEY,Authorization:"Bearer "+token}
+  });
+  if(!r.ok){alert("Kayıt silinemedi. Supabase DELETE yetkisini kontrol edin.");return}
+  await load();
+}
+async function clearAll(){
+  if(!rows.length){alert("Silinecek kayıt bulunmuyor.");return}
+  if(!confirm("TÜM test sonuçları silinecek. Bu işlem geri alınamaz. Devam etmek istiyor musunuz?")) return;
+  if(!confirm("Son kez soruyorum: Tüm katılımcı sonuçlarını temizleyelim mi?")) return;
+  let r=await fetch(URL+"/rest/v1/isg_katilimlar?id=not.is.null",{
+    method:"DELETE",
+    headers:{apikey:KEY,Authorization:"Bearer "+token}
+  });
+  if(!r.ok){alert("Kayıtlar silinemedi. Supabase DELETE yetkisini eklememiz gerekiyor.");return}
+  await load();
+  alert("Test kayıtları temizlendi.");
+}
+$("loginBtn").onclick=login;
+$("refresh").onclick=load;
+$("clearAll").onclick=clearAll;
+$("logout").onclick=()=>location.reload();
+$("search").oninput=renderPeople;
 </script></body></html>
