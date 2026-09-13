@@ -35,7 +35,7 @@
 
 <div class="panel">
 <h2>Bekleyen Katılımcılar (<span id="readyCount">0</span>)</h2>
-<div class="tablewrap"><table><thead><tr><th>Katılımcı</th><th>Katılım zamanı</th></tr></thead><tbody id="readyBody"></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Katılımcı</th><th>Katılım zamanı</th><th>İşlem</th></tr></thead><tbody id="readyBody"></tbody></table></div>
 </div>
 
 <div class="panel">
@@ -93,9 +93,19 @@ async function loadReady(){
  const rows=await api("/rest/v1/"+WAIT_TABLE+"?select=id,kullanici_adi,katilim_zamani&order=katilim_zamani.asc");
  document.getElementById("readyCount").textContent=rows.length;
  const body=document.getElementById("readyBody");body.innerHTML="";
- if(!rows.length){body.innerHTML='<tr><td colspan="2" class="empty muted">Henüz katılımcı yok.</td></tr>';return}
- rows.forEach(x=>{const tr=document.createElement("tr");tr.innerHTML="<td>"+esc(x.kullanici_adi)+"</td><td>"+new Date(x.katilim_zamani).toLocaleString("tr-TR")+"</td>";body.appendChild(tr)})
+ if(!rows.length){body.innerHTML='<tr><td colspan="3" class="empty muted">Henüz katılımcı yok.</td></tr>';return}
+ rows.forEach(x=>{const tr=document.createElement("tr");tr.innerHTML="<td>"+esc(x.kullanici_adi)+"</td><td>"+new Date(x.katilim_zamani).toLocaleString("tr-TR")+"</td><td><button class='smallBtn danger' onclick='deleteWaiting("+JSON.stringify(x.id)+")'>SİL</button></td>";body.appendChild(tr)})
 }
+async function deleteWaiting(id){
+ const rows=await api("/rest/v1/"+WAIT_TABLE+"?id=eq."+encodeURIComponent(id)+"&select=id,kullanici_adi");
+ if(!rows.length)return;
+ if(!confirm('"'+(rows[0].kullanici_adi||'Katılımcı')+'" adlı bekleyen katılımcıyı silmek istediğinize emin misiniz?'))return;
+ try{
+  await api("/rest/v1/"+WAIT_TABLE+"?id=eq."+encodeURIComponent(id),{method:"DELETE",headers:{"Prefer":"return=minimal"}});
+  await loadReady();
+ }catch(e){alert("Katılımcı silinemedi. Supabase DELETE yetkisini kontrol edin.");console.error(e)}
+}
+
 const QUESTIONS={
   1:{topic:"Makine Koruyucuları",answer:"🔴 RİSKLİ",explanation:"Hareketli makine parçalarının koruyucusuz bırakılması; sıkışma, ezilme, kesilme ve dolanma gibi ciddi yaralanmalara neden olabilir. Hareketli bölümlere erişimi engelleyecek uygun koruyucular bulunmalıdır."},
   2:{topic:"Forklift-Yaya Güvenliği",answer:"🟢 GÜVENLİ",explanation:"Forklift ve yaya trafiğinin ayrılması, araç-yaya çarpışması riskini azaltır. Belirlenmiş yaya yolları, trafik düzeni ve mümkün olduğunda fiziksel ayırma güvenli çalışma için önemlidir."},
