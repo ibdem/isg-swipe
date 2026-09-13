@@ -356,10 +356,9 @@ function showPersonWrong(id){
 async function deleteResult(id){
   if(!confirm("Bu sonuç kaydı silinsin mi?"))return;
   try{
-    await authFetch("/rest/v1/rpc/delete_isg_result",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({result_id:id})
+    await authFetch("/rest/v1/"+RESULTS_TABLE+"?id=eq."+encodeURIComponent(id),{
+      method:"DELETE",
+      headers:{"Prefer":"return=minimal"}
     });
     await loadResults();
   }catch(e){
