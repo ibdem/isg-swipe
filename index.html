@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="tr">
 <head>
@@ -107,11 +108,16 @@ async function api(path,options={}){
     ...options,
     headers:{...headers,...(options.headers||{})}
   });
+  const text=await r.text();
   if(!r.ok){
-    const text=await r.text();
     throw new Error("HTTP "+r.status+" - "+text);
   }
-  return r.status===204?null:r.json();
+  if(!text || !text.trim()) return null;
+  try{
+    return JSON.parse(text);
+  }catch(e){
+    return null;
+  }
 }
 
 function showError(stage,e){
