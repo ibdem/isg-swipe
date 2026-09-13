@@ -2,231 +2,408 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>İSG Challenge - Yönetici</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>İSG Challenge – Yönetici</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#071d31;color:#17202a;font-family:Arial,sans-serif}.wrap{max-width:1150px;margin:auto;padding:20px}.panel{background:#fff;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 8px 30px rgba(0,0,0,.12)}.brand{font-weight:800;color:#f2bd21;font-size:20px}.brand span{color:#17202a}h1,h2{margin:8px 0 16px}.login{max-width:520px;margin:70px auto}.input{width:100%;padding:13px;border:1px solid #ccd4dc;border-radius:9px;margin:8px 0;font-size:16px}button{padding:11px 16px;border:0;border-radius:9px;background:#164a78;color:#fff;font-weight:700;cursor:pointer}button.danger{background:#b42318}button.secondary{background:#64748b}button:disabled{opacity:.55;cursor:not-allowed}.msg{min-height:24px;font-weight:700}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.status{padding:8px 12px;border-radius:999px;font-weight:800;background:#e7edf2}.ready{background:#dcfce7}.started{background:#fee2e2}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px;border-bottom:1px solid #e5e7eb}th{background:#f5f7f9}.muted{color:#64748b}.empty{text-align:center;padding:25px}.logout{float:right}.resultActions{display:flex;gap:7px;flex-wrap:wrap}.smallBtn{padding:8px 10px;font-size:13px}.dangerOutline{background:#fff;color:#b42318;border:1px solid #b42318}.detailPanel{display:none}.detailCard{border:1px solid #e5e7eb;border-radius:12px;padding:15px;margin:10px 0;background:#fafbfc}.detailCard h3{margin:0 0 8px}.answer{font-weight:800}.wrongAnswer{color:#b42318}.correctAnswer{color:#15803d}.explain{margin-top:8px;line-height:1.5}.commonRow{cursor:pointer}.commonRow:hover{background:#f8fafc}
+*{box-sizing:border-box}
+body{margin:0;background:#071d31;font-family:Arial,sans-serif;color:#17202a}
+.wrap{max-width:1250px;margin:auto;padding:18px}
+.brand{color:#fff;font-size:28px;font-weight:900;margin-bottom:14px}.brand span{color:#f2bd21}
+.panel{background:#fff;border-radius:20px;padding:22px;margin:14px 0;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+h2{margin-top:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input,button{padding:13px;border-radius:10px;border:1px solid #ccd4dc;font-size:15px}
+input{flex:1;min-width:230px}
+button{background:#164a78;color:#fff;font-weight:800;cursor:pointer}
+button.secondary{background:#64748b}button.danger{background:#b42318}
+button.success{background:#16803c}
+button:disabled{opacity:.55;cursor:not-allowed}
+.muted{color:#64748b;font-size:13px}.msg{margin:12px 0;font-weight:700;white-space:pre-wrap}
+.hidden{display:none!important}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.stat{background:#f6f8fa;border-radius:14px;padding:16px}.stat b{display:block;font-size:25px;margin-top:5px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th,td{padding:11px 9px;border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:middle}
+th{background:#f3f5f7;font-size:13px}
+.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:800}
+.badge.ok{background:#dcfce7;color:#166534}.badge.wait{background:#fef3c7;color:#92400e}
+.badge.run{background:#dbeafe;color:#1d4ed8}
+.score{font-weight:900}.wrong{color:#b42318;font-weight:800}
+.detail{background:#f8fafc;border-radius:12px;padding:12px;margin-top:8px;font-size:14px}
+.question{border-left:5px solid #b42318;background:#fff;padding:14px;margin:10px 0;border-radius:10px}
+.search{max-width:320px}
+.errorbox{background:#fff0f0;color:#9b1c1c;border-radius:10px;padding:12px;margin-top:10px;display:none;white-space:pre-wrap;word-break:break-word}
+.waiting-name{font-weight:800}.time{font-size:13px;color:#64748b}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){.stats{grid-template-columns:1fr}.wrap{padding:12px}.panel{padding:16px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="panel">
-<div class="brand">🦺 İSG <span>CHALLENGE</span></div>
+<div class="brand">🦺 İSG <span>CHALLENGE</span> — YÖNETİCİ</div>
+
+<div class="panel" id="loginPanel">
+<h2>Yönetici Girişi</h2>
+<p class="muted">Yetkili Supabase hesabınızla giriş yapın.</p>
+<div class="row">
+<input id="email" type="email" autocomplete="username" placeholder="E-posta">
+<input id="password" type="password" autocomplete="current-password" placeholder="Şifre">
+<button id="loginBtn" type="button">Giriş Yap</button>
+</div>
+<p id="loginMsg" class="msg"></p>
 </div>
 
-<section id="loginPanel" class="panel login">
-<h1>Yönetici Girişi</h1>
-<input id="email" class="input" type="email" placeholder="E-posta">
-<input id="password" class="input" type="password" placeholder="Şifre">
-<div class="actions"><button id="loginBtn">GİRİŞ YAP</button><button id="forgotBtn" class="secondary">ŞİFREMİ UNUTTUM</button></div>
-<div id="loginMsg" class="msg"></div>
-</section>
+<div class="hidden" id="dash">
 
-<section id="adminPanel" style="display:none">
 <div class="panel">
-<div class="top"><div><h1>Yarışma Kontrolü</h1><div class="muted">Katılımcılar beklerken burada görünür.</div></div><div id="raceStatus" class="status">Yükleniyor...</div></div>
+<div class="row" style="justify-content:space-between">
+<div>
+<h2>🏁 Yarışma Kontrolü</h2>
+<p id="raceStatusText" class="muted">Durum kontrol ediliyor...</p>
+</div>
 <div class="actions">
-<button id="startRaceBtn">YARIŞMAYI BAŞLAT</button>
-<button id="resetRaceBtn" class="secondary">YENİ YARIŞMA / SIFIRLA</button>
-<button id="logoutBtn" class="danger logout">ÇIKIŞ</button>
+<button id="startRace" class="success" type="button">▶ YARIŞMAYI BAŞLAT</button>
+<button id="resetRace" class="secondary" type="button">↻ YARIŞMAYI SIFIRLA</button>
+<button id="refresh" type="button">Yenile</button>
+<button id="logout" class="secondary" type="button">Çıkış</button>
+</div>
 </div>
 <div id="raceMsg" class="msg"></div>
+<div id="raceError" class="errorbox"></div>
 </div>
 
 <div class="panel">
-<h2>Bekleyen Katılımcılar (<span id="readyCount">0</span>)</h2>
-<div class="tablewrap"><table><thead><tr><th>Katılımcı</th><th>Katılım zamanı</th><th>İşlem</th></tr></thead><tbody id="readyBody"></tbody></table></div>
+<div class="row" style="justify-content:space-between">
+<div>
+<h2>👥 Bekleyen Katılımcılar</h2>
+<p class="muted">Katıl butonuna basan kişiler burada görünür. Yarışmayı başlatmadan önce test kayıtlarını silebilirsiniz.</p>
+</div>
+<button id="clearWaiting" class="danger" type="button">TÜM BEKLEYENLERİ SİL</button>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Katılımcı</th><th>Katılım zamanı</th><th>İşlem</th></tr></thead>
+<tbody id="waitingBody"><tr><td colspan="3">Yükleniyor...</td></tr></tbody>
+</table>
+</div>
+<div id="waitingError" class="errorbox"></div>
 </div>
 
 <div class="panel">
-<h2>Sonuçlar</h2>
-<div class="tablewrap"><table><thead><tr><th>Katılımcı</th><th>Durum</th><th>Puan</th><th>Doğru</th><th>Yanlış</th><th>Boş</th><th>Tarih</th><th>İşlem</th></tr></thead><tbody id="resultsBody"></tbody></table></div>
+<div class="row" style="justify-content:space-between">
+<div><h2>📊 Sonuçlar</h2><p class="muted">Yarışmayı tamamlayan katılımcılar ve puanları.</p></div>
+<input id="search" class="search" placeholder="Katılımcı adı ara...">
 </div>
-
-<div id="detailPanel" class="panel detailPanel">
-<div class="top"><div><h2 id="detailTitle">Yanlış Sorular</h2><div id="detailSubtitle" class="muted"></div></div><button id="closeDetailBtn" class="secondary">KAPAT</button></div>
-<div id="detailBody"></div>
+<div class="stats">
+<div class="stat">👥 Toplam katılımcı<b id="total">0</b></div>
+<div class="stat">🏆 En yüksek puan<b id="high">0</b></div>
+<div class="stat">📊 Ortalama puan<b id="avg">0</b></div>
+<div class="stat">❌ Toplam yanlış<b id="wrongTotal">0</b></div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Katılımcı</th><th>Durum</th><th>Puan</th><th>Doğru</th><th>Yanlış</th><th>Boş</th><th>Tarih</th><th>İşlem</th></tr></thead>
+<tbody id="participantsBody"><tr><td colspan="8">Yükleniyor...</td></tr></tbody>
+</table>
+</div>
+<div id="resultError" class="errorbox"></div>
 </div>
 
 <div class="panel">
-<h2>Toplu Yanlış Analizi</h2>
-<div class="muted" style="margin-bottom:12px">Burada tüm katılımcıların yanlışları birlikte gösterilir. Hangi soruyu kaç kişinin ve kimlerin yanlış yaptığını tek ekranda görebilirsiniz.</div>
-<div class="tablewrap"><table><thead><tr><th>Soru</th><th>Konu</th><th>Yanlış Sayısı</th><th>Yanlış Yapan Katılımcılar</th><th>Detay</th></tr></thead><tbody id="commonWrongBody"></tbody></table></div>
+<h2>❌ Toplu Yanlış Analizi</h2>
+<p class="muted">Tüm katılımcıların hangi sorularda hata yaptığını gösterir.</p>
+<div id="wrongList"><p class="muted">Yükleniyor...</p></div>
 </div>
-</section>
+
+</div>
 </div>
 
 <script>
 const SUPABASE_URL="https://pzmqqgeowcxpcrzktxhp.supabase.co";
 const SUPABASE_KEY="sb_publishable_52okgtC6njTs-uv9lWtYVw_zhMKh18_";
-const RESULTS_TABLE="isg_katilimlar",WAIT_TABLE="isg_bekleyenler",RACE_TABLE="isg_yarisma";
-let accessToken="",refreshId=null;
+const RESULTS_TABLE="isg_katilimlar";
+const WAIT_TABLE="isg_bekleyenler";
+const RACE_TABLE="isg_yarisma";
 
-function authHeaders(){return {"apikey":SUPABASE_KEY,"Authorization":"Bearer "+accessToken}}
-async function api(path,options={}){
- const r=await fetch(SUPABASE_URL+path,{...options,headers:{...authHeaders(),...(options.headers||{})}});
- if(!r.ok)throw new Error(await r.text());return r.status===204?null:r.json();
-}
-async function login(){
- const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;
- document.getElementById("loginMsg").textContent="";
- try{
-  const r=await fetch(SUPABASE_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"apikey":SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({email,password})});
-  if(!r.ok)throw new Error(await r.text());
-  const data=await r.json();accessToken=data.access_token;
-  document.getElementById("loginPanel").style.display="none";document.getElementById("adminPanel").style.display="block";
-  await loadAll();refreshId=setInterval(loadAll,2000);
- }catch(e){document.getElementById("loginMsg").textContent="Giriş başarısız. E-posta veya şifreyi kontrol edin.";console.error(e)}
-}
-async function loadAll(){
- try{await loadRace();await loadReady();await loadResults()}catch(e){console.error(e)}
-}
-async function loadRace(){
- const rows=await api("/rest/v1/"+RACE_TABLE+"?id=eq.1&select=id,durum,baslangic_zamani,updated_at");
- const s=document.getElementById("raceStatus");
- if(!rows.length){s.textContent="Durum bulunamadı";return}
- const race=rows[0];s.textContent=race.durum==="basladi"?"YARIŞMA BAŞLADI":"BEKLİYOR";
- s.className="status "+(race.durum==="basladi"?"started":"ready");
- document.getElementById("startRaceBtn").disabled=race.durum==="basladi";
-}
-async function loadReady(){
- const rows=await api("/rest/v1/"+WAIT_TABLE+"?select=id,kullanici_adi,katilim_zamani&order=katilim_zamani.asc");
- document.getElementById("readyCount").textContent=rows.length;
- const body=document.getElementById("readyBody");body.innerHTML="";
- if(!rows.length){body.innerHTML='<tr><td colspan="3" class="empty muted">Henüz katılımcı yok.</td></tr>';return}
- rows.forEach(x=>{const tr=document.createElement("tr");tr.innerHTML="<td>"+esc(x.kullanici_adi)+"</td><td>"+new Date(x.katilim_zamani).toLocaleString("tr-TR")+"</td><td><button class='smallBtn danger' onclick='deleteWaiting("+JSON.stringify(x.id)+")'>SİL</button></td>";body.appendChild(tr)})
-}
-async function deleteWaiting(id){
- const rows=await api("/rest/v1/"+WAIT_TABLE+"?id=eq."+encodeURIComponent(id)+"&select=id,kullanici_adi");
- if(!rows.length)return;
- if(!confirm('"'+(rows[0].kullanici_adi||'Katılımcı')+'" adlı bekleyen katılımcıyı silmek istediğinize emin misiniz?'))return;
- try{
-  await api("/rest/v1/"+WAIT_TABLE+"?id=eq."+encodeURIComponent(id),{method:"DELETE",headers:{"Prefer":"return=minimal"}});
-  await loadReady();
- }catch(e){alert("Katılımcı silinemedi. Supabase DELETE yetkisini kontrol edin.");console.error(e)}
-}
+const questions=[
+{id:1,topic:"Makine Koruyucuları",text:"Bir makinenin hareketli ve sıkışma/ezilme riski bulunan bölümlerinde koruyucu bulunmaması güvenli mi, riskli mi?",answer:"risk",explanation:"Makinenin hareketli ve tehlikeli bölgelerine erişimi önleyen koruyucular bulunmalı ve devre dışı bırakılmamalıdır."},
+{id:2,topic:"Forklift-Yaya Güvenliği",text:"Forklift ile yayaların aynı çalışma alanında bulunduğu yerde yaya yolu belirlenmiş ve forklift ile yaya trafiği ayrılmıştır. Bu uygulama güvenli mi, riskli mi?",answer:"safe",explanation:"Yaya ve forklift trafiğinin ayrılması çarpışma riskini azaltır ve güvenli bir uygulamadır."},
+{id:3,topic:"Elektrik Kablosu",text:"Dış izolasyonu zarar görmüş ve iletken kısmı açığa çıkmaya başlamış bir elektrik kablosunun kullanılması güvenli mi, riskli mi?",answer:"risk",explanation:"Hasarlı kablo elektrik çarpması, kısa devre ve yangın riski oluşturabilir."},
+{id:4,topic:"Yangın Söndürücü",text:"Yangın söndürücünün önü açık, kolay ulaşılabilir ve üzerinde gerekli yönlendirme işareti bulunmaktadır. Bu durum güvenli mi, riskli mi?",answer:"safe",explanation:"Yangın ekipmanlarına acil durumda kolay ve hızlı şekilde ulaşılabilmelidir."},
+{id:5,topic:"Paketleme Makinesi",text:"Çalışan, paketleme makinesinde sıkışan malzemeyi makine çalışırken elini tehlikeli bölgeye sokarak çıkarmaya çalışmaktadır. Bu durum güvenli mi, riskli mi?",answer:"risk",explanation:"Sıkışmaya müdahale öncesinde makine durdurulmalı ve gerekli enerji izolasyonu yapılmalıdır."},
+{id:6,topic:"Merdiven Kullanımı",text:"Çalışan, uygun durumdaki merdiveni düz ve sağlam zeminde, üç noktadan temas sağlayarak kullanmaktadır. Bu uygulama güvenli mi, riskli mi?",answer:"safe",explanation:"Merdivenin sağlam zeminde kullanılması ve üç nokta temasının korunması güvenli kullanım için önemlidir."},
+{id:7,topic:"Sıcak Çalışma",text:"Kaynak yapılacak alanda yanıcı malzemeler uzaklaştırılmadan ve gerekli sıcak çalışma önlemleri alınmadan işe başlanmaktadır. Bu durum güvenli mi, riskli mi?",answer:"risk",explanation:"Sıcak çalışma öncesinde yanıcı malzemeler uzaklaştırılmalı ve gerekli yangın önlemleri alınmalıdır."},
+{id:8,topic:"Elle Taşıma",text:"Çalışan, yükü kaldırmadan önce yükün ağırlığını ve tutma noktalarını değerlendiriyor, uygun kaldırma tekniğini kullanıyor ve gerektiğinde yardım istiyor. Bu uygulama güvenli mi, riskli mi?",answer:"safe",explanation:"Yük değerlendirilerek uygun kaldırma tekniğinin kullanılması ve gerektiğinde yardım alınması güvenli bir uygulamadır."},
+{id:9,topic:"Sapan Kullanımı",text:"Kaldırma işleminden önce aşınmış, lifleri zarar görmüş ve deformasyon bulunan bir sapanın kullanılmaya devam edilmesi güvenli mi, riskli mi?",answer:"risk",explanation:"Hasarlı veya deformasyon bulunan kaldırma ekipmanları kullanılmamalıdır."},
+{id:10,topic:"Kimyasal Çalışma",text:"Kimyasal madde ile çalışan personel, ürüne uygun eldiven ve gözlük kullanıyor ve çalışma alanında gerekli güvenlik bilgileri bulunuyor. Bu uygulama güvenli mi, riskli mi?",answer:"safe",explanation:"Uygun KKD kullanılması ve gerekli güvenlik bilgilerinin bulunması kimyasal çalışma için güvenli uygulamalardır."},
+{id:11,topic:"Yaya Yolu",text:"Belirlenmiş yaya yolunun malzeme ve ekipmanlarla kapatılması ve çalışanların araç trafiğinin bulunduğu alandan yürümek zorunda kalması güvenli mi, riskli mi?",answer:"risk",explanation:"Yaya yolları açık tutulmalı ve çalışanların araç trafiğine maruz kalması önlenmelidir."},
+{id:12,topic:"LOTO / Enerji İzolasyonu",text:"Bakım öncesinde makinenin enerji kaynakları izole edilmeden ve enerjinin sıfırlandığı doğrulanmadan müdahaleye başlanmaktadır. Bu durum güvenli mi, riskli mi?",answer:"risk",explanation:"Bakım öncesinde enerji kaynakları izole edilmeli ve enerjinin sıfır olduğu doğrulanmalıdır."}
+];
 
-const QUESTIONS={
-  1:{topic:"Makine Koruyucuları",answer:"🔴 RİSKLİ",explanation:"Hareketli makine parçalarının koruyucusuz bırakılması; sıkışma, ezilme, kesilme ve dolanma gibi ciddi yaralanmalara neden olabilir. Hareketli bölümlere erişimi engelleyecek uygun koruyucular bulunmalıdır."},
-  2:{topic:"Forklift-Yaya Güvenliği",answer:"🟢 GÜVENLİ",explanation:"Forklift ve yaya trafiğinin ayrılması, araç-yaya çarpışması riskini azaltır. Belirlenmiş yaya yolları, trafik düzeni ve mümkün olduğunda fiziksel ayırma güvenli çalışma için önemlidir."},
-  3:{topic:"Hasarlı Elektrik Kablosu",answer:"🔴 RİSKLİ",explanation:"İzolasyonu zarar görmüş elektrik kablosu elektrik çarpması, kısa devre ve yangın riski oluşturabilir. Hasarlı kablo kullanılmamalı ve yetkili personel tarafından uygun şekilde değiştirilmelidir."},
-  4:{topic:"Yangın Söndürücüye Erişim",answer:"🟢 GÜVENLİ",explanation:"Yangın söndürücünün önünün açık ve kolay ulaşılabilir olması, acil durumda müdahale süresini kısaltır. Yangın ekipmanlarının erişimi sürekli olarak açık tutulmalıdır."},
-  5:{topic:"Paketleme Makinesinde Sıkışma",answer:"🔴 RİSKLİ",explanation:"Çalışan makineye müdahale etmek; sıkışma, ezilme ve hareketli parçalara kapılma riski oluşturur. Müdahale öncesinde makine durdurulmalı, enerji kaynakları izole edilmeli ve güvenli hale getirildiği doğrulanmalıdır."},
-  6:{topic:"Merdiven Kullanımı",answer:"🟢 GÜVENLİ",explanation:"Sağlam ve uygun zemine yerleştirilen merdivenin doğru kullanılması ve üç noktadan temasın korunması düşme riskini azaltır. Merdiven kullanılmadan önce uygunluğu ve fiziksel durumu kontrol edilmelidir."},
-  7:{topic:"Sıcak Çalışma",answer:"🔴 RİSKLİ",explanation:"Sıcak çalışma; kıvılcım ve ısı nedeniyle yangın veya patlama riski oluşturabilir. Yanıcı malzemeler kontrol altına alınmalı, gerekli iş izinleri ve yangın güvenliği tedbirleri uygulanmalıdır."},
-  8:{topic:"Elle Kaldırma ve Taşıma",answer:"🟢 GÜVENLİ",explanation:"Yükün ağırlığının ve kavrama koşullarının değerlendirilmesi, uygun kaldırma tekniğinin kullanılması ve gerektiğinde yardım alınması kas-iskelet zorlanmalarını ve taşıma kaynaklı yaralanmaları azaltır."},
-  9:{topic:"Sapan Kullanımı",answer:"🔴 RİSKLİ",explanation:"Aşınmış, kesilmiş, deforme olmuş veya hasarlı sapan yük altında kopabilir ve yükün düşmesine neden olabilir. Sapanlar kullanımdan önce kontrol edilmeli, uygunsuz olanlar derhal kullanım dışı bırakılmalıdır."},
-  10:{topic:"Kimyasal Çalışma",answer:"🟢 GÜVENLİ",explanation:"Kimyasalın özelliğine uygun KKD kullanılması, etiketleme ve güvenlik bilgilerine uygun çalışma maruziyet riskini azaltır. Kullanılan KKD ve çalışma yöntemi kimyasalın tehlikesine uygun olmalıdır."},
-  11:{topic:"Yaya Yolu",answer:"🔴 RİSKLİ",explanation:"Belirlenmiş yaya yolunun malzeme veya ekipmanla kapatılması, çalışanların araç trafiğine veya başka tehlikeli alanlara yönelmesine neden olabilir. Yaya yolları sürekli açık ve düzenli tutulmalıdır."},
-  12:{topic:"LOTO / Enerji İzolasyonu",answer:"🔴 RİSKLİ",explanation:"Enerji kaynakları izole edilmeden yapılan bakım veya müdahale, makinenin beklenmedik şekilde çalışmasına ya da depolanmış enerjinin açığa çıkmasına neden olabilir. Enerji kesilmeli, kilitleme-etiketleme yapılmalı ve sıfır enerji durumu doğrulanmalıdır."}
-};
+let accessToken=null,allRows=[],waitingRows=[];
 
-async function loadResults(){
- const rows=await api("/rest/v1/"+RESULTS_TABLE+"?select=*&order=created_at.desc");
- window.resultRows=rows;
- const body=document.getElementById("resultsBody");body.innerHTML="";
- if(!rows.length){body.innerHTML='<tr><td colspan="8" class="empty muted">Henüz sonuç yok.</td></tr>';renderCommonWrong([]);return}
- rows.forEach(x=>{
-  const unanswered=(x.toplam_sorular||12)-(x.cevaplanan_sorular||0);
-  const wrong=(x.yanlis_soru_kimlikleri||[]).length;
-  const correct=(x.cevaplanan_sorular||0)-wrong;
-  const tr=document.createElement("tr");
-  tr.innerHTML="<td>"+esc(x.kullanici_adi)+"</td><td>"+esc(x.durum||"Tamamlandı")+"</td><td>"+(x.puan??0)+"</td><td>"+correct+"</td><td>"+wrong+"</td><td>"+unanswered+"</td><td>"+new Date(x.created_at).toLocaleString("tr-TR")+"</td><td><div class='resultActions'><button class='smallBtn' onclick='showParticipantWrong("+JSON.stringify(x.id)+")'>YANLIŞLARI GÖR</button><button class='smallBtn danger' onclick='deleteResult("+JSON.stringify(x.id)+")'>SİL</button></div></td>";
-  body.appendChild(tr);
- });
- renderCommonWrong(rows);
+const $=id=>document.getElementById(id);
+
+function showBox(id,text){
+  const el=$(id);
+  if(!text){el.style.display="none";el.textContent="";return}
+  el.style.display="block";el.textContent=text;
+}
+function msg(id,text,ok=false){
+  $(id).textContent=text;
+  $(id).style.color=ok?"#166534":"#b42318";
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function formatDate(v){return v?new Date(v).toLocaleString("tr-TR",{dateStyle:"short",timeStyle:"short"}):"-";}
+
+async function loginAdmin(){
+  const email=$("email").value.trim(),password=$("password").value;
+  if(!email||!password){msg("loginMsg","E-posta ve şifreyi girin.");return}
+  $("loginBtn").disabled=true;$("loginBtn").textContent="Giriş yapılıyor...";
+  try{
+    const r=await fetch(SUPABASE_URL+"/auth/v1/token?grant_type=password",{
+      method:"POST",
+      headers:{apikey:SUPABASE_KEY,"Content-Type":"application/json"},
+      body:JSON.stringify({email,password})
+    });
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.msg||d.error_description||JSON.stringify(d));
+    accessToken=d.access_token;
+    $("loginPanel").classList.add("hidden");
+    $("dash").classList.remove("hidden");
+    await refreshAll();
+  }catch(e){
+    msg("loginMsg","Giriş başarısız: "+e.message);
+  }finally{
+    $("loginBtn").disabled=false;$("loginBtn").textContent="Giriş Yap";
+  }
 }
 
-function showParticipantWrong(id){
- const x=(window.resultRows||[]).find(r=>String(r.id)===String(id)); if(!x)return;
- const ids=(x.yanlis_soru_kimlikleri||[]).map(Number).filter(n=>QUESTIONS[n]);
- document.getElementById("detailTitle").textContent=esc(x.kullanici_adi)+" – Yanlış Sorular";
- document.getElementById("detailSubtitle").textContent=ids.length?ids.length+" yanlış cevap bulundu.":"Yanlış cevap bulunmuyor.";
- const body=document.getElementById("detailBody");body.innerHTML="";
- if(!ids.length){body.innerHTML='<div class="empty muted">Bu katılımcının yanlış cevabı yok.</div>'}
- ids.sort((a,b)=>a-b).forEach(id=>{
-  const q=QUESTIONS[id];
-  const card=document.createElement("div");card.className="detailCard";
-  card.innerHTML="<h3>Soru "+id+" – "+esc(q.topic)+"</h3><div class='answer wrongAnswer'>Katılımcının cevabı: Yanlış</div><div class='answer correctAnswer'>Doğru cevap: "+esc(q.answer)+"</div><div class='explain'><strong>Açıklama:</strong> "+esc(q.explanation)+"</div>";
-  body.appendChild(card);
- });
- document.getElementById("detailPanel").style.display="block";
- document.getElementById("detailPanel").scrollIntoView({behavior:"smooth",block:"start"});
-}
-
-function renderCommonWrong(rows){
- const wrongMap={};
- rows.forEach(x=>{
-  (x.yanlis_soru_kimlikleri||[]).map(Number).forEach(id=>{
-   if(!QUESTIONS[id])return;
-   if(!wrongMap[id])wrongMap[id]=[];
-   wrongMap[id].push(x.kullanici_adi||"İsimsiz");
+async function authFetch(path,options={}){
+  const r=await fetch(SUPABASE_URL+path,{
+    ...options,
+    headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+accessToken,...(options.headers||{})}
   });
- });
- const body=document.getElementById("commonWrongBody");body.innerHTML="";
- const ids=Object.keys(wrongMap).map(Number).sort((a,b)=>wrongMap[b].length-wrongMap[a].length||a-b);
- if(!ids.length){body.innerHTML='<tr><td colspan="5" class="empty muted">Henüz yanlış cevap verisi yok.</td></tr>';return}
- ids.forEach(id=>{
-  const q=QUESTIONS[id];
-  const names=wrongMap[id];
-  const tr=document.createElement("tr");
-  tr.className="commonRow";
-  tr.onclick=()=>showCommonWrong(id, names);
-  tr.innerHTML="<td><strong>Soru "+id+"</strong></td><td>"+esc(q.topic)+"</td><td><strong>"+names.length+" kişi</strong></td><td>"+esc(names.join(", "))+"</td><td>Detayı gör →</td>";
-  body.appendChild(tr);
- });
+  const text=await r.text();
+  let data=null;
+  try{data=text?JSON.parse(text):null}catch(_){data=text}
+  if(!r.ok)throw new Error("HTTP "+r.status+" - "+(data?.message||data?.hint||data?.details||data?.error_description||text));
+  return data;
 }
 
-function showCommonWrong(id, names=[]){
- const q=QUESTIONS[id];
- document.getElementById("detailTitle").textContent="Soru "+id+" – "+q.topic;
- document.getElementById("detailSubtitle").textContent=(names.length?names.length+" kişi bu soruyu yanlış yaptı.":"Ortak yanlış yapılan soru");
- const body=document.getElementById("detailBody");
- body.innerHTML="<div class='detailCard'><div class='answer wrongAnswer'>Yanlış yapanlar: "+esc(names.join(", ")||"—")+"</div><div class='answer correctAnswer'>Doğru cevap: "+esc(q.answer)+"</div><div class='explain'><strong>Açıklama:</strong> "+esc(q.explanation)+"</div></div>";
- document.getElementById("detailPanel").style.display="block";
- document.getElementById("detailPanel").scrollIntoView({behavior:"smooth",block:"start"});
+async function loadRace(){
+  try{
+    const rows=await authFetch("/rest/v1/"+RACE_TABLE+"?id=eq.1&select=id,durum,baslangic_zamani,updated_at");
+    const race=rows&&rows[0];
+    if(!race){
+      $("raceStatusText").textContent="Yarışma kaydı bulunamadı.";
+      return;
+    }
+    if(race.durum==="bekliyor"){
+      $("raceStatusText").innerHTML='Durum: <span class="badge wait">BEKLİYOR</span>';
+    }else if(race.durum==="basladi"){
+      $("raceStatusText").innerHTML='Durum: <span class="badge run">BAŞLADI</span> — '+formatDate(race.baslangic_zamani);
+    }else{
+      $("raceStatusText").textContent="Durum: "+race.durum;
+    }
+  }catch(e){
+    $("raceStatusText").textContent="Yarışma durumu okunamadı.";
+    showBox("raceError",e.message);
+  }
 }
 
-async function deleteResult(id){
- const x=(window.resultRows||[]).find(r=>String(r.id)===String(id));
- if(!x)return;
- if(!confirm('"'+(x.kullanici_adi||'Katılımcı')+'" adlı katılımcının sonucunu silmek istediğinize emin misiniz?'))return;
- try{
-  await api("/rest/v1/"+RESULTS_TABLE+"?id=eq."+encodeURIComponent(id),{method:"DELETE",headers:{"Prefer":"return=minimal"}});
-  await loadResults();
- }catch(e){alert("Sonuç silinemedi. Yetki/politika ayarlarını kontrol edin.");console.error(e)}
+async function loadWaiting(){
+  $("waitingBody").innerHTML='<tr><td colspan="3">Yükleniyor...</td></tr>';
+  showBox("waitingError","");
+  try{
+    waitingRows=await authFetch("/rest/v1/"+WAIT_TABLE+"?select=id,kullanici_adi,katilim_zamani&order=katilim_zamani.asc");
+    renderWaiting();
+  }catch(e){
+    $("waitingBody").innerHTML='<tr><td colspan="3">Katılımcılar okunamadı.</td></tr>';
+    showBox("waitingError",e.message);
+  }
+}
+
+function renderWaiting(){
+  if(!waitingRows.length){
+    $("waitingBody").innerHTML='<tr><td colspan="3">Bekleyen katılımcı yok.</td></tr>';
+    return;
+  }
+  $("waitingBody").innerHTML=waitingRows.map(r=>`
+    <tr>
+      <td class="waiting-name">${escapeHtml(r.kullanici_adi||"-")}</td>
+      <td class="time">${formatDate(r.katilim_zamani)}</td>
+      <td><button class="danger" type="button" onclick="deleteWaiting('${r.id}')">SİL</button></td>
+    </tr>`).join("");
+}
+
+async function deleteWaiting(id){
+  if(!confirm("Bu katılımcıyı bekleme listesinden silmek istediğinize emin misiniz?"))return;
+  try{
+    await authFetch("/rest/v1/"+WAIT_TABLE+"?id=eq."+encodeURIComponent(id),{method:"DELETE"});
+    await loadWaiting();
+  }catch(e){
+    alert("Silme başarısız:\n"+e.message);
+  }
+}
+
+async function clearWaiting(){
+  if(!confirm("Bekleyen tüm katılımcılar silinsin mi?"))return;
+  try{
+    await authFetch("/rest/v1/"+WAIT_TABLE,{method:"DELETE"});
+    await loadWaiting();
+    msg("raceMsg","Bekleyen katılımcılar temizlendi.",true);
+  }catch(e){
+    showBox("waitingError",e.message);
+  }
 }
 
 async function startRace(){
- const rows=await api("/rest/v1/"+WAIT_TABLE+"?select=id");
- if(!rows.length){document.getElementById("raceMsg").textContent="Başlatmak için en az bir katılımcı bekliyor olmalı.";return}
- const startAt=new Date(Date.now()+4000).toISOString();
- try{
-  await api("/rest/v1/"+RACE_TABLE+"?id=eq.1",{method:"PATCH",headers:{"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({durum:"basladi",baslangic_zamani:startAt,updated_at:new Date().toISOString()})});
-  document.getElementById("raceMsg").textContent="Yarışma başlatıldı. Katılımcılar 3-2-1 ile başlayacak.";
-  await loadRace();
- }catch(e){document.getElementById("raceMsg").textContent="Yarışma başlatılamadı.";console.error(e)}
+  $("startRace").disabled=true;
+  showBox("raceError","");
+  try{
+    const startAt=new Date(Date.now()+5000).toISOString();
+    await authFetch("/rest/v1/"+RACE_TABLE+"?id=eq.1",{
+      method:"PATCH",
+      headers:{"Content-Type":"application/json","Prefer":"return=minimal"},
+      body:JSON.stringify({durum:"basladi",baslangic_zamani:startAt,updated_at:new Date().toISOString()})
+    });
+    msg("raceMsg","Yarışma başlatıldı. Katılımcılar 3-2-1 sayımından sonra başlayacak.",true);
+    await loadRace();
+  }catch(e){
+    msg("raceMsg","Yarışma başlatılamadı.");
+    showBox("raceError",e.message);
+  }finally{$("startRace").disabled=false}
 }
+
 async function resetRace(){
- if(!confirm("Yeni yarışma başlatmak için bekleme listesini temizlemek istediğinize emin misiniz?"))return;
- try{
-  await api("/rest/v1/"+WAIT_TABLE,{method:"DELETE"});
-  await api("/rest/v1/"+RACE_TABLE+"?id=eq.1",{method:"PATCH",headers:{"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({durum:"bekliyor",baslangic_zamani:null,updated_at:new Date().toISOString()})});
-  document.getElementById("raceMsg").textContent="Yeni yarışma için sistem hazır.";
-  await loadAll();
- }catch(e){document.getElementById("raceMsg").textContent="Sıfırlama başarısız.";console.error(e)}
+  if(!confirm("Yarışma bekleme durumuna alınsın ve bekleyen katılımcılar temizlensin mi?"))return;
+  $("resetRace").disabled=true;
+  try{
+    await authFetch("/rest/v1/"+RACE_TABLE+"?id=eq.1",{
+      method:"PATCH",
+      headers:{"Content-Type":"application/json","Prefer":"return=minimal"},
+      body:JSON.stringify({durum:"bekliyor",baslangic_zamani:null,updated_at:new Date().toISOString()})
+    });
+    await authFetch("/rest/v1/"+WAIT_TABLE,{method:"DELETE"});
+    msg("raceMsg","Yarışma sıfırlandı ve bekleyen katılımcılar temizlendi.",true);
+    await refreshAll();
+  }catch(e){
+    msg("raceMsg","Sıfırlama başarısız.");
+    showBox("raceError",e.message);
+  }finally{$("resetRace").disabled=false}
 }
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-async function forgot(){
- const email=document.getElementById("email").value.trim();
- if(!email){document.getElementById("loginMsg").textContent="Önce e-posta adresinizi yazın.";return}
- try{
-  const r=await fetch(SUPABASE_URL+"/auth/v1/recover",{method:"POST",headers:{"apikey":SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({email})});
-  if(!r.ok)throw new Error(await r.text());document.getElementById("loginMsg").textContent="Şifre sıfırlama e-postası gönderildi.";
- }catch(e){document.getElementById("loginMsg").textContent="Şifre sıfırlama isteği gönderilemedi.";console.error(e)}
+
+async function loadResults(){
+  $("participantsBody").innerHTML='<tr><td colspan="8">Yükleniyor...</td></tr>';
+  showBox("resultError","");
+  try{
+    allRows=await authFetch("/rest/v1/"+RESULTS_TABLE+"?select=id,created_at,kullanici_adi,yanlis_soru_kimlikleri,toplam_sorular,cevaplanan_sorular,puan,durum&order=created_at.desc&limit=5000");
+    renderParticipants();renderWrongQuestions();
+  }catch(e){
+    $("participantsBody").innerHTML='<tr><td colspan="8">Sonuçlar okunamadı.</td></tr>';
+    showBox("resultError",e.message);
+  }
 }
-function logout(){accessToken="";clearInterval(refreshId);document.getElementById("adminPanel").style.display="none";document.getElementById("loginPanel").style.display="block"}
-document.getElementById("closeDetailBtn").onclick=()=>document.getElementById("detailPanel").style.display="none";
-document.getElementById("loginBtn").onclick=login;document.getElementById("forgotBtn").onclick=forgot;document.getElementById("startRaceBtn").onclick=startRace;document.getElementById("resetRaceBtn").onclick=resetRace;document.getElementById("logoutBtn").onclick=logout;
+
+function getWrongIds(row){return Array.isArray(row.yanlis_soru_kimlikleri)?row.yanlis_soru_kimlikleri.map(Number):[]}
+
+function renderParticipants(){
+  const q=$("search").value.trim().toLocaleLowerCase("tr-TR");
+  const rows=allRows.filter(r=>(r.kullanici_adi||"").toLocaleLowerCase("tr-TR").includes(q));
+  const scores=allRows.map(r=>Number(r.puan||0));
+  $("total").textContent=allRows.length;
+  $("high").textContent=allRows.length?Math.max(...scores):0;
+  $("avg").textContent=allRows.length?(scores.reduce((a,b)=>a+b,0)/allRows.length).toFixed(1):0;
+  $("wrongTotal").textContent=allRows.reduce((n,r)=>n+getWrongIds(r).length,0);
+
+  if(!rows.length){
+    $("participantsBody").innerHTML='<tr><td colspan="8">Kayıt bulunamadı.</td></tr>';return;
+  }
+
+  $("participantsBody").innerHTML=rows.map(r=>{
+    const totalQ=Number(r.toplam_sorular||12);
+    const answered=Number(r.cevaplanan_sorular||0);
+    const wrong=getWrongIds(r).length;
+    const correct=Math.max(0,answered-wrong);
+    const empty=Math.max(0,totalQ-answered);
+    const finished=answered>=totalQ;
+    return `<tr>
+      <td><b>${escapeHtml(r.kullanici_adi||"-")}</b></td>
+      <td><span class="badge ${finished?"ok":"wait"}">${finished?"Tamamladı":"Süre Doldu"}</span></td>
+      <td class="score">${Number(r.puan||0)}</td><td>${correct}</td><td class="wrong">${wrong}</td><td>${empty}</td>
+      <td>${formatDate(r.created_at)}</td>
+      <td><div class="actions"><button type="button" onclick="showPersonWrong(${Number(r.id)})">Yanlışları Gör</button><button class="danger" type="button" onclick="deleteResult(${Number(r.id)})">SİL</button></div></td>
+    </tr>`;
+  }).join("");
+}
+
+function showPersonWrong(id){
+  const r=allRows.find(x=>Number(x.id)===Number(id));
+  if(!r)return;
+  const ids=getWrongIds(r);
+  if(!ids.length){alert((r.kullanici_adi||"Katılımcı")+" yanlış soru yapmamış.");return}
+  const text=ids.map(id=>{
+    const q=questions.find(x=>x.id===id);
+    return q?`Soru ${q.id} – ${q.topic}\nKatılımcının cevabı: YANLIŞ\nDoğru cevap: ${q.answer==="risk"?"RİSKLİ":"GÜVENLİ"}\nAçıklama: ${q.explanation}`:"Soru "+id;
+  }).join("\n\n--------------------\n\n");
+  alert((r.kullanici_adi||"Katılımcı")+" – Yanlış Sorular\n\n"+text);
+}
+
+async function deleteResult(id){
+  if(!confirm("Bu sonuç kaydı silinsin mi?"))return;
+  try{
+    await authFetch("/rest/v1/rpc/delete_isg_result",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({result_id:id})
+    });
+    await loadResults();
+  }catch(e){
+    alert("Sonuç silinemedi:\n"+e.message);
+  }
+}
+
+function renderWrongQuestions(){
+  const counts={};
+  const names={};
+  allRows.forEach(r=>getWrongIds(r).forEach(id=>{
+    counts[id]=(counts[id]||0)+1;
+    names[id]=names[id]||[];
+    if(r.kullanici_adi&&!names[id].includes(r.kullanici_adi))names[id].push(r.kullanici_adi);
+  }));
+  const ids=Object.keys(counts).map(Number).sort((a,b)=>counts[b]-counts[a]||a-b);
+
+  if(!ids.length){$("wrongList").innerHTML="<p class='muted'>Henüz yanlış yapılan soru yok.</p>";return}
+
+  $("wrongList").innerHTML=ids.map(id=>{
+    const q=questions.find(x=>x.id===id);if(!q)return"";
+    return `<div class="question">
+      <b>Soru ${q.id} – ${q.topic}</b>
+      <div class="muted" style="margin-top:5px">${counts[id]} kişi yanlış yaptı</div>
+      <div class="detail">
+        <b>Doğru cevap:</b> ${q.answer==="risk"?"🔴 RİSKLİ":"🟢 GÜVENLİ"}<br><br>
+        <b>Açıklama:</b> ${escapeHtml(q.explanation)}<br><br>
+        <b>Yanlış yapanlar:</b> ${names[id].map(escapeHtml).join(", ")}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function refreshAll(){
+  await Promise.all([loadRace(),loadWaiting(),loadResults()]);
+}
+
+$("loginBtn").onclick=loginAdmin;
+$("refresh").onclick=refreshAll;
+$("startRace").onclick=startRace;
+$("resetRace").onclick=resetRace;
+$("clearWaiting").onclick=clearWaiting;
+$("search").oninput=renderParticipants;
+$("logout").onclick=()=>{accessToken=null;location.reload()};
+$("password").addEventListener("keydown",e=>{if(e.key==="Enter")loginAdmin()});
 </script>
-</body></html>
+</body>
+</html>
