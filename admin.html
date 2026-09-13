@@ -174,6 +174,7 @@ async function loginAdmin(){
     $("loginPanel").classList.add("hidden");
     $("dash").classList.remove("hidden");
     await refreshAll();
+    startLiveRefresh();
   }catch(e){
     msg("loginMsg","Giriş başarısız: "+e.message);
   }finally{
@@ -394,6 +395,15 @@ function renderWrongQuestions(){
 
 async function refreshAll(){
   await Promise.all([loadRace(),loadWaiting(),loadResults()]);
+}
+
+let liveRefreshId=null;
+function startLiveRefresh(){
+  if(liveRefreshId) clearInterval(liveRefreshId);
+  liveRefreshId=setInterval(async()=>{
+    if(!accessToken) return;
+    await Promise.all([loadRace(),loadWaiting(),loadResults()]);
+  },2000);
 }
 
 $("loginBtn").onclick=loginAdmin;
