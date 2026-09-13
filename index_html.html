@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>İSG Challenge</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#071d31;color:#17202a;font-family:Arial,sans-serif}.wrap{max-width:1100px;margin:auto;padding:15px}.panel{background:#fff;border-radius:20px;padding:22px;box-shadow:0 8px 30px rgba(0,0,0,.12)}.brand{font-weight:800;color:#f2bd21;font-size:20px}.brand span{color:#17202a}h1,h2{margin:10px 0}.center{max-width:700px;margin:60px auto;text-align:center}.input{padding:14px;border:1px solid #ccd4dc;border-radius:10px;font-size:16px;width:100%;margin:12px 0}button{padding:13px 18px;border:0;border-radius:10px;background:#164a78;color:#fff;font-size:16px;font-weight:700;cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}.msg{min-height:24px;font-weight:700}.waiting{font-size:22px;font-weight:800;margin:25px 0}.small{color:#64748b}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.timer{font-size:24px;font-weight:800}.timer.warn{color:#b42318}.progress{height:10px;background:#e7edf2;border-radius:99px;overflow:hidden;margin:14px 0}.bar{height:100%;width:0;background:#164a78}.qbox{margin-top:18px;border:1px solid #dfe5ea;border-radius:16px;padding:16px}.qimg{width:100%;max-height:330px;object-fit:contain;border-radius:12px;background:#f7f9fb;margin-bottom:14px}.options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.option{background:#f5f8fa;color:#17202a;border:2px solid #d8e0e7}.option:hover{border-color:#164a78}.score{font-size:52px;font-weight:900;color:#164a78}.countdown{font-size:72px;font-weight:900;color:#164a78;margin:30px 0}@media(max-width:700px){.options{grid-template-columns:1fr}.qimg{max-height:230px}}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="panel">
+<div class="brand">🦺 İSG <span>CHALLENGE</span></div>
+
+<section id="start" class="center">
+<h1>Güvenli Çalış, Güvenli Dön</h1>
+<p>Yarışmaya katılmak için adınızı ve soyadınızı giriniz.</p>
+<input id="name" class="input" maxlength="50" autocomplete="name" placeholder="Ad Soyad">
+<div id="startMsg" class="msg"></div>
+<button id="joinBtn">YARIŞMAYA KATIL</button>
+</section>
+
+<section id="waiting" class="center" style="display:none">
+<h1>Katılımınız Alındı</h1>
+<div class="waiting">Yönetici yarışmayı başlatmayı bekliyor...</div>
+<p class="small">Sorular yarışma başlayana kadar gösterilmeyecektir.</p>
+<div id="waitingMsg" class="msg"></div>
+</section>
+
+<section id="countdown" class="center" style="display:none">
+<h1>Hazır Ol!</h1><div id="countText" class="countdown">3</div>
+</section>
+
+<section id="game" style="display:none">
+<div class="top"><b id="counter">1 / 12</b><div class="timer" id="timer">04:00</div></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="qbox">
+<img id="qimg" class="qimg" alt="İSG senaryosu">
+<h2 id="qtext"></h2>
+<div class="options">
+<button class="option" id="safeBtn">🟢 GÜVENLİ</button>
+<button class="option" id="riskBtn">🔴 RİSKLİ</button>
+</div></div>
+</section>
+
+<section id="result" class="center" style="display:none">
+<h1 id="resultTitle">Yarışma Tamamlandı</h1><div class="score" id="scoreText">0 PUAN</div>
+<p id="resultDetails"></p><p id="saveMsg"></p>
+</section>
+</div></div>
+
+<script>
+const SUPABASE_URL="https://pzmqqgeowcxpcrzktxhp.supabase.co";
+const SUPABASE_KEY="sb_publishable_52okgtC6njTs-uv9lWtYVw_zhMKh18_";
+const RESULTS_TABLE="isg_katilimlar", WAIT_TABLE="isg_bekleyenler", RACE_TABLE="isg_yarisma", TOTAL_TIME=240;
+
+const questions=[
+{id:1,topic:"Makine Koruyucuları",text:"Bir makinenin hareketli ve sıkışma/ezilme riski bulunan bölümlerinde koruyucu bulunmaması güvenli mi, riskli mi?",answer:"risk",image:"q1.png"},
+{id:2,topic:"Forklift-Yaya Güvenliği",text:"Forklift ile yayaların aynı çalışma alanında bulunduğu yerde yaya yolu belirlenmiş ve forklift ile yaya trafiği ayrılmıştır. Bu uygulama güvenli mi, riskli mi?",answer:"safe",image:"q2.png"},
+{id:3,topic:"Elektrik Kablosu",text:"Dış izolasyonu zarar görmüş ve iletken kısmı açığa çıkmaya başlamış bir elektrik kablosunun kullanılması güvenli mi, riskli mi?",answer:"risk",image:"q3.png"},
+{id:4,topic:"Yangın Söndürücü",text:"Yangın söndürücünün önü açık, kolay ulaşılabilir ve üzerinde gerekli yönlendirme işareti bulunmaktadır. Bu durum güvenli mi, riskli mi?",answer:"safe",image:"q4.png"},
+{id:5,topic:"Paketleme Makinesi",text:"Çalışan, paketleme makinesinde sıkışan malzemeyi makine çalışırken elini tehlikeli bölgeye sokarak çıkarmaya çalışmaktadır. Bu durum güvenli mi, riskli mi?",answer:"risk",image:"q5.png"},
+{id:6,topic:"Merdiven Kullanımı",text:"Çalışan, uygun durumdaki merdiveni düz ve sağlam zeminde, üç noktadan temas sağlayarak kullanmaktadır. Bu uygulama güvenli mi, riskli mi?",answer:"safe",image:"q6.png"},
+{id:7,topic:"Sıcak Çalışma",text:"Kaynak yapılacak alanda yanıcı malzemeler uzaklaştırılmadan ve gerekli sıcak çalışma önlemleri alınmadan işe başlanmaktadır. Bu durum güvenli mi, riskli mi?",answer:"risk",image:"q7.png"},
+{id:8,topic:"Elle Taşıma",text:"Çalışan, yükü kaldırmadan önce yükün ağırlığını ve tutma noktalarını değerlendiriyor, uygun kaldırma tekniğini kullanıyor ve gerektiğinde yardım istiyor. Bu uygulama güvenli mi, riskli mi?",answer:"safe",image:"q8.png"},
+{id:9,topic:"Sapan Kullanımı",text:"Kaldırma işleminden önce aşınmış, lifleri zarar görmüş ve deformasyon bulunan bir sapanın kullanılmaya devam edilmesi güvenli mi, riskli mi?",answer:"risk",image:"q9.png"},
+{id:10,topic:"Kimyasal Çalışma",text:"Kimyasal madde ile çalışan personel, ürüne uygun eldiven ve gözlük kullanıyor ve çalışma alanında gerekli güvenlik bilgileri bulunuyor. Bu uygulama güvenli mi, riskli mi?",answer:"safe",image:"q10.png"},
+{id:11,topic:"Yaya Yolu",text:"Belirlenmiş yaya yolunun malzeme ve ekipmanlarla kapatılması ve çalışanların araç trafiğinin bulunduğu alandan yürümek zorunda kalması güvenli mi, riskli mi?",answer:"risk",image:"q11.png"},
+{id:12,topic:"LOTO / Enerji İzolasyonu",text:"Bakım öncesinde makinenin enerji kaynakları izole edilmeden ve enerjinin sıfırlandığı doğrulanmadan müdahaleye başlanmaktadır. Bu durum güvenli mi, riskli mi?",answer:"risk",image:"q12.png"}
+];
+
+let participant="",waitId=null,i=0,correct=0,wrong=[],answered=0,timeLeft=TOTAL_TIME,timerId=null,pollId=null,finished=false,startedRaceAt=null;
+const $=id=>document.getElementById(id);
+const headers={"apikey":SUPABASE_KEY};
+
+async function api(path,options={}){
+ const r=await fetch(SUPABASE_URL+path,{...options,headers:{...headers,...(options.headers||{})}});
+ if(!r.ok) throw new Error(await r.text());
+ return r.status===204?null:r.json();
+}
+
+async function joinRace(){
+ const n=$("name").value.trim();
+ if(n.length<2){$("startMsg").textContent="Lütfen adınızı ve soyadınızı giriniz.";return}
+ $("joinBtn").disabled=true;$("startMsg").textContent="";
+ try{
+  const rows=await api("/rest/v1/"+RACE_TABLE+"?id=eq.1&select=durum,baslangic_zamani");
+  if(!rows.length || rows[0].durum!=="bekliyor"){throw new Error("Yarışma şu anda başlatılıyor veya devam ediyor.");}
+  const r=await api("/rest/v1/"+WAIT_TABLE,{method:"POST",headers:{"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify({kullanici_adi:n})});
+  waitId=r[0].id;participant=n;
+  $("start").style.display="none";$("waiting").style.display="block";
+  startPolling();
+ }catch(e){$("startMsg").textContent="Katılım sırasında hata oluştu. Lütfen tekrar deneyin.";console.error(e);$("joinBtn").disabled=false}
+}
+
+function startPolling(){
+ pollId=setInterval(checkRace,1000);checkRace();
+}
+async function checkRace(){
+ if(finished)return;
+ try{
+  const rows=await api("/rest/v1/"+RACE_TABLE+"?id=eq.1&select=durum,baslangic_zamani");
+  if(!rows.length)return;
+  const race=rows[0];
+  if(race.durum==="basladi" && race.baslangic_zamani){
+    const startAt=new Date(race.baslangic_zamani).getTime();
+    if(startedRaceAt===startAt)return;
+    startedRaceAt=startAt;
+    clearInterval(pollId);
+    await countdownThenStart(startAt);
+  }
+ }catch(e){console.error(e)}
+}
+
+async function countdownThenStart(startAt){
+ $("waiting").style.display="none";$("countdown").style.display="block";
+ const labels=["3","2","1","BAŞLA!"];
+ for(let x=0;x<labels.length;x++){
+  $("countText").textContent=labels[x];
+  await new Promise(r=>setTimeout(r,1000));
+ }
+ const delay=startAt-Date.now();
+ if(delay>0) await new Promise(r=>setTimeout(r,delay));
+ startGame();
+}
+
+function startGame(){
+ $("countdown").style.display="none";$("game").style.display="block";
+ i=0;correct=0;wrong=[];answered=0;timeLeft=TOTAL_TIME;finished=false;
+ $("timer").textContent="04:00";timerId=setInterval(tick,1000);render();
+}
+
+function render(){
+ if(i>=questions.length){finish("Tamamlandı");return}
+ const q=questions[i];$("counter").textContent=(i+1)+" / "+questions.length;
+ $("bar").style.width=(i/questions.length*100)+"%";$("qtext").textContent=q.text;$("qimg").src=q.image;
+ $("safeBtn").disabled=false;$("riskBtn").disabled=false;
+}
+
+function tick(){
+ timeLeft--;const m=String(Math.floor(timeLeft/60)).padStart(2,"0"),s=String(timeLeft%60).padStart(2,"0");
+ $("timer").textContent=m+":"+s;$("timer").classList.toggle("warn",timeLeft<=30);
+ if(timeLeft<=0)finish("Süre Doldu");
+}
+
+function answer(value){
+ if(finished)return;
+ $("safeBtn").disabled=true;$("riskBtn").disabled=true;answered++;
+ const q=questions[i];if(value===q.answer)correct++;else wrong.push(q.id);i++;
+ if(i>=questions.length)finish("Tamamlandı");else render();
+}
+
+async function finish(status){
+ if(finished)return;finished=true;clearInterval(timerId);
+ $("game").style.display="none";$("result").style.display="block";
+ const score=Math.round(correct/questions.length*100);
+ $("resultTitle").textContent=status==="Süre Doldu"?"Süre Doldu":"Yarışma Tamamlandı";
+ $("scoreText").textContent=score+" PUAN";
+ $("resultDetails").textContent=answered+" soru cevaplandı • "+correct+" doğru • "+wrong.length+" yanlış • "+(questions.length-answered)+" boş";
+ try{
+  await api("/rest/v1/"+RESULTS_TABLE,{method:"POST",headers:{"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({
+   kullanici_adi:participant,yanlis_soru_kimlikleri:wrong,toplam_sorular:questions.length,cevaplanan_sorular:answered,puan:score,durum:status
+  })});
+  $("saveMsg").textContent="Sonucunuz başarıyla kaydedildi.";
+ }catch(e){$("saveMsg").textContent="Sonuç gösterildi ancak kayıt sırasında hata oluştu.";console.error(e)}
+}
+
+$("joinBtn").onclick=joinRace;$("safeBtn").onclick=()=>answer("safe");$("riskBtn").onclick=()=>answer("risk");
+</script>
+</body></html>
