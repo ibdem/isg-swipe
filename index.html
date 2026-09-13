@@ -86,7 +86,8 @@ async function joinRace(){
  try{
   const rows=await api("/rest/v1/"+RACE_TABLE+"?id=eq.1&select=durum,baslangic_zamani");
   if(!rows.length || rows[0].durum!=="bekliyor"){throw new Error("Yarışma şu anda başlatılıyor veya devam ediyor.");}
-  const r=await api("/rest/v1/"+WAIT_TABLE,{method:"POST",headers:{"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify({kullanici_adi:n})});
+  const r=await api("/rest/v1/"+WAIT_TABLE,{method:"POST",headers:{"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({kullanici_adi:n})});
+participant=n;})});
   waitId=r[0].id;participant=n;
   $("start").style.display="none";$("waiting").style.display="block";
   startPolling();
