@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="tr">
 <head>
@@ -140,8 +139,9 @@ async function joinRace(){
       throw new Error("isg_yarisma tablosunda id=1 kaydı bulunamadı.");
     }
 
-    if(rows[0].durum!=="bekliyor"){
-      throw new Error("Yarışma şu anda başlatılıyor veya devam ediyor.");
+    const raceStatus=String(rows[0].durum ?? "").trim().toLocaleLowerCase("tr-TR");
+    if(raceStatus!=="bekliyor"){
+      throw new Error("Supabase durum değeri: ["+JSON.stringify(rows[0].durum)+"]");
     }
 
     await api("/rest/v1/"+WAIT_TABLE,{
